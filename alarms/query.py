@@ -1,4 +1,5 @@
 from datetime import timedelta
+from collections import namedtuple
 
 
 def get_alarms_for_element(df, element_id):
@@ -36,3 +37,14 @@ def sum_alarm_durations(df):
       d.h. das Ergebnis kann größer sein als der Gesamtzeitraum.
     """
     return sum((row['end'] - row['START'] for _, row in df.iterrows()), timedelta())
+
+
+AlarmCount = namedtuple('AlarmCount', ['element_id', 'count'])
+
+
+def most_alarms(df):
+    element_ids = df['ELEMENT ID'].unique()
+
+    pairs = (AlarmCount(element_id, len(df[df['ELEMENT ID'] == element_id])) for element_id in element_ids)
+
+    return max(pairs, key=lambda alarm_count: alarm_count.count)
